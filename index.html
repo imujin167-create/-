@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>시스템 설계 계산기</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+<body>
+
+    <main class="container">
+
+        <header class="page-header">
+            <h1>시스템 설계 계산기</h1>
+            <p>Version 1.0</p>
+        </header>
+
+        <section class="calculator-card">
+
+            <div class="calculator-title">
+                <h2>관내 유속 계산</h2>
+
+                <p>
+                    관 종류와 호칭경에 따른 내경을 불러와
+                    관내 유속을 계산합니다.
+                </p>
+            </div>
+
+            <div class="input-section">
+
+                <div class="input-group">
+                    <label for="pipeType">
+                        관 종류
+                    </label>
+
+                    <select id="pipeType">
+                        <option value="">
+                            관 종류를 선택하세요
+                        </option>
+
+                        <option value="susTube">
+                            SUS Tube
+                        </option>
+
+                        <option value="flexibleA">
+                            SUS Flexible Tube (A Type)
+                        </option>
+
+                        <option value="flexibleB">
+                            SUS Flexible Tube (B Type)
+                        </option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="pipeSize">
+                        호칭경
+                    </label>
+
+                    <select
+                        id="pipeSize"
+                        disabled
+                    >
+                        <option value="">
+                            먼저 관 종류를 선택하세요
+                        </option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="flowRate">
+                        유량
+                    </label>
+
+                    <div class="input-with-unit">
+                        <input
+                            type="number"
+                            id="flowRate"
+                            min="0"
+                            step="0.01"
+                            placeholder="예: 60"
+                        >
+
+                        <span class="unit">
+                            LPM
+                        </span>
+                    </div>
+                </div>
+
+                <button
+                    type="button"
+                    id="calculateButton"
+                >
+                    유속 계산
+                </button>
+
+                <p
+                    id="errorMessage"
+                    class="error-message"
+                    aria-live="polite"
+                ></p>
+
+            </div>
+
+            <div class="result-section">
+
+                <h3>계산 결과</h3>
+
+                <div class="result-grid">
+
+                    <div class="result-item main-result">
+                        <span class="result-label">
+                            관내 유속
+                        </span>
+
+                        <strong id="velocityResult">
+                            -
+                        </strong>
+
+                        <span class="result-unit">
+                            m/s
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
