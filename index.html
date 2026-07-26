@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
 
@@ -9,7 +8,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>시스템 설계 계산기</title>
+    <title>Pressure Drop Calculator</title>
 
     <link
         rel="stylesheet"
@@ -18,47 +17,63 @@
 </head>
 
 <body>
+    <header class="site-header">
+        <div class="header-inner">
+            <p class="eyebrow">
+                Engineering Calculator
+            </p>
 
-    <main class="container">
+            <h1>
+                Pressure Drop Calculator
+            </h1>
 
-        <header class="page-header">
-            <h1>시스템 설계 계산기</h1>
-            <p>Version 1.0</p>
-        </header>
+            <p class="header-description">
+                유속, 직관 마찰손실, 관부속 손실 및
+                높이차 압력을 계산합니다.
+            </p>
+        </div>
+    </header>
 
+    <main class="page-container">
+
+        <!-- ==============================
+             01. 유속 계산
+        =============================== -->
         <section class="calculator-card">
+            <div class="section-heading">
+                <div>
+                    <span class="section-number">
+                        01
+                    </span>
 
-            <div class="calculator-title">
-                <h2>관내 유속 계산</h2>
+                    <h2>
+                        유속 계산
+                    </h2>
+                </div>
 
                 <p>
-                    관 종류와 호칭경에 따른 내경을 불러와
-                    관내 유속을 계산합니다.
+                    관 종류와 호칭경을 선택하고
+                    유량을 입력하세요.
                 </p>
             </div>
 
-            <div class="input-section">
-
+            <div class="input-grid velocity-input-grid">
                 <div class="input-group">
                     <label for="pipeType">
                         관 종류
                     </label>
 
                     <select id="pipeType">
-                        <option value="">
-                            관 종류를 선택하세요
-                        </option>
-
-                        <option value="susTube">
+                        <option value="sus-tube">
                             SUS Tube
                         </option>
 
-                        <option value="flexibleA">
-                            SUS Flexible Tube (A Type)
+                        <option value="flexible-a">
+                            SUS Flexible Tube (Type A)
                         </option>
 
-                        <option value="flexibleB">
-                            SUS Flexible Tube (B Type)
+                        <option value="flexible-b">
+                            SUS Flexible Tube (Type B)
                         </option>
                     </select>
                 </div>
@@ -68,81 +83,425 @@
                         호칭경
                     </label>
 
-                    <select
-                        id="pipeSize"
-                        disabled
-                    >
-                        <option value="">
-                            먼저 관 종류를 선택하세요
-                        </option>
+                    <select id="pipeSize">
                     </select>
                 </div>
 
                 <div class="input-group">
                     <label for="flowRate">
-                        유량
+                        유량 (LPM)
                     </label>
 
-                    <div class="input-with-unit">
-                        <input
-                            type="number"
-                            id="flowRate"
-                            min="0"
-                            step="0.01"
-                            placeholder="예: 60"
-                        >
+                    <input
+                        type="number"
+                        id="flowRate"
+                        min="0"
+                        step="any"
+                        placeholder="예: 40"
+                    >
+                </div>
+            </div>
 
-                        <span class="unit">
-                            LPM
+            <div class="result-grid">
+                <article class="result-box">
+                    <span class="result-label">
+                        단면적
+                    </span>
+
+                    <strong>
+                        <span id="areaResult">
+                            -
                         </span>
-                    </div>
+                        ㎡
+                    </strong>
+                </article>
+
+                <article class="result-box primary-result">
+                    <span class="result-label">
+                        유속
+                    </span>
+
+                    <strong>
+                        <span id="velocityResult">
+                            -
+                        </span>
+                        m/s
+                    </strong>
+                </article>
+            </div>
+        </section>
+
+
+        <!-- ==============================
+             02. 직관 마찰손실
+        =============================== -->
+        <section class="calculator-card">
+            <div class="section-heading row-heading">
+                <div>
+                    <span class="section-number">
+                        02
+                    </span>
+
+                    <h2>
+                        직관 마찰손실
+                    </h2>
                 </div>
 
                 <button
                     type="button"
-                    id="calculateButton"
+                    class="secondary-button"
+                    id="addPipeRow"
                 >
-                    유속 계산
+                    + 직관 행 추가
                 </button>
-
-                <p
-                    id="errorMessage"
-                    class="error-message"
-                    aria-live="polite"
-                ></p>
-
             </div>
 
-            <div class="result-section">
+            <div class="formula-guide">
+                <strong>
+                    적용식
+                </strong>
 
-                <h3>계산 결과</h3>
-
-                <div class="result-grid">
-
-                    <div class="result-item main-result">
-                        <span class="result-label">
-                            관내 유속
-                        </span>
-
-                        <strong id="velocityResult">
-                            -
-                        </strong>
-
-                        <span class="result-unit">
-                            m/s
-                        </span>
-                    </div>
-
-                </div>
-
+                <span>
+                    층류는 f = 64/Re,
+                    천이영역 및 난류는
+                    Swamee-Jain식을 적용합니다.
+                </span>
             </div>
 
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                구간명
+                            </th>
+
+                            <th>
+                                길이
+                                <br>
+                                (m)
+                            </th>
+
+                            <th>
+                                내경
+                                <br>
+                                (mm)
+                            </th>
+
+                            <th>
+                                절대조도
+                                <br>
+                                (mm)
+                            </th>
+
+                            <th>
+                                밀도
+                                <br>
+                                (kg/㎥)
+                            </th>
+
+                            <th>
+                                점성계수
+                                <br>
+                                (Pa·s)
+                            </th>
+
+                            <th>
+                                유속
+                                <br>
+                                (m/s)
+                            </th>
+
+                            <th>
+                                레이놀즈수
+                            </th>
+
+                            <th>
+                                마찰계수
+                            </th>
+
+                            <th>
+                                압력손실
+                                <br>
+                                (bar)
+                            </th>
+
+                            <th>
+                                삭제
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="pipeRows">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-total">
+                <span>
+                    직관 마찰손실 합계
+                </span>
+
+                <strong>
+                    <span id="pipeTotal">
+                        0.00
+                    </span>
+                    bar
+                </strong>
+            </div>
         </section>
 
+
+        <!-- ==============================
+             03. 관부속 손실
+        =============================== -->
+        <section class="calculator-card">
+            <div class="section-heading row-heading">
+                <div>
+                    <span class="section-number">
+                        03
+                    </span>
+
+                    <h2>
+                        관부속 손실
+                    </h2>
+                </div>
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="addLocalRow"
+                >
+                    + 관부속 행 추가
+                </button>
+            </div>
+
+            <div class="formula-guide">
+                <strong>
+                    적용식
+                </strong>
+
+                <span>
+                    ΔP = (K × ρv²) / 2
+                </span>
+            </div>
+
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                부속명
+                            </th>
+
+                            <th>
+                                수량
+                            </th>
+
+                            <th>
+                                개당 K값
+                            </th>
+
+                            <th>
+                                총 K값
+                            </th>
+
+                            <th>
+                                밀도
+                                <br>
+                                (kg/㎥)
+                            </th>
+
+                            <th>
+                                유속
+                                <br>
+                                (m/s)
+                            </th>
+
+                            <th>
+                                압력손실
+                                <br>
+                                (bar)
+                            </th>
+
+                            <th>
+                                삭제
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="localRows">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-total">
+                <span>
+                    관부속 손실 합계
+                </span>
+
+                <strong>
+                    <span id="localTotal">
+                        0.00
+                    </span>
+                    bar
+                </strong>
+            </div>
+        </section>
+
+
+        <!-- ==============================
+             04. 높이차 압력
+        =============================== -->
+        <section class="calculator-card">
+            <div class="section-heading">
+                <div>
+                    <span class="section-number">
+                        04
+                    </span>
+
+                    <h2>
+                        높이차에 의한 압력
+                    </h2>
+                </div>
+
+                <p>
+                    중력가속도는 9.81 m/s²로
+                    고정 적용됩니다.
+                </p>
+            </div>
+
+            <div class="input-grid elevation-input-grid">
+                <div class="input-group">
+                    <label for="elevationDensity">
+                        유체 밀도 (kg/㎥)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="elevationDensity"
+                        min="0"
+                        step="any"
+                    >
+                </div>
+
+                <div class="input-group">
+                    <label for="heightDifference">
+                        높이차 (m)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="heightDifference"
+                        step="any"
+                        placeholder="예: 8"
+                    >
+                </div>
+            </div>
+
+            <div class="result-grid single-result">
+                <article class="result-box">
+                    <span class="result-label">
+                        높이차 압력
+                    </span>
+
+                    <strong>
+                        <span id="elevationResult">
+                            0.00
+                        </span>
+                        bar
+                    </strong>
+                </article>
+            </div>
+        </section>
+
+
+        <!-- ==============================
+             05. 전체 차압
+        =============================== -->
+        <section class="summary-card">
+            <div class="section-heading">
+                <div>
+                    <span class="section-number">
+                        05
+                    </span>
+
+                    <h2>
+                        전체 차압
+                    </h2>
+                </div>
+
+                <button
+                    type="button"
+                    class="reset-button"
+                    id="resetAll"
+                >
+                    전체 초기화
+                </button>
+            </div>
+
+            <div class="summary-list">
+                <div class="summary-row">
+                    <span>
+                        직관 마찰손실
+                    </span>
+
+                    <strong>
+                        <span id="summaryPipe">
+                            0.00
+                        </span>
+                        bar
+                    </strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>
+                        관부속 손실
+                    </span>
+
+                    <strong>
+                        <span id="summaryLocal">
+                            0.00
+                        </span>
+                        bar
+                    </strong>
+                </div>
+
+                <div class="summary-row">
+                    <span>
+                        높이차 압력
+                    </span>
+
+                    <strong>
+                        <span id="summaryElevation">
+                            0.00
+                        </span>
+                        bar
+                    </strong>
+                </div>
+
+                <div class="summary-row grand-total-row">
+                    <span>
+                        전체 차압
+                    </span>
+
+                    <strong>
+                        <span id="grandTotal">
+                            0.00
+                        </span>
+                        bar
+                    </strong>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <footer>
+        <p>
+            Pressure Drop Calculator
+        </p>
+    </footer>
+
     <script src="script.js"></script>
-
 </body>
-
 </html>
